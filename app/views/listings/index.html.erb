@@ -1,3 +1,141 @@
+<<<<<<< Updated upstream
+<% content_for :title, "Sell.io - Buy & Sell Anything" %>
+
+<% if notice %>
+  <div class="alert alert-success"><%= notice %></div>
+<% end %>
+
+<div class="homepage">
+  <!-- Hero Section with Search -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Buy & Sell Anything</h1>
+      <p class="hero-subtitle">Free classified ads in your area</p>
+      
+      <% unless user_signed_in? %>
+        <div class="auth-buttons-hero">
+          <%= link_to "Login", new_user_session_path, class: "btn-hero btn-login" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "btn-hero btn-signup-hero" %>
+        </div>
+      <% end %>
+      
+      <div class="search-box">
+        <%= form_with url: listings_path, method: :get, local: true, class: "search-form" do |f| %>
+          <div class="search-input-group">
+            <%= f.text_field :search, placeholder: "What are you looking for?", class: "search-input" %>
+            <%= f.text_field :location, placeholder: "Location (e.g., Dublin)", class: "search-input location-input" %>
+            <%= f.submit "Search", class: "search-button" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section">
+    <div class="container">
+      <h2 class="section-title">Browse by Category</h2>
+      <div class="categories-grid">
+        <div class="category-card">
+          <div class="category-icon">🚗</div>
+          <h3>Motors</h3>
+          <p>Cars, Vans, Motorcycles</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🏠</div>
+          <h3>Property</h3>
+          <p>Houses, Apartments, Land</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">💼</div>
+          <h3>Jobs</h3>
+          <p>Full-time, Part-time, Contract</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">📱</div>
+          <h3>Electronics</h3>
+          <p>Phones, Computers, TVs</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🪑</div>
+          <h3>Furniture</h3>
+          <p>Home & Garden</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">👕</div>
+          <h3>Fashion</h3>
+          <p>Clothing & Accessories</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🎮</div>
+          <h3>Hobbies</h3>
+          <p>Sports, Games, Books</p>
+        </div>
+        <div class="category-card">
+          <div class="category-icon">🐾</div>
+          <h3>Pets</h3>
+          <p>Dogs, Cats, Birds</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Listings Section -->
+  <section class="listings-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Latest Ads</h2>
+        <%= link_to "View All", listings_path, class: "view-all-link" %>
+      </div>
+      
+      <% if @listings.any? %>
+        <div class="listings-grid">
+          <% @listings.limit(12).each do |listing| %>
+            <div class="listing-card">
+              <div class="listing-image">
+                <!-- Placeholder for image - you'll add image support later -->
+                <div class="image-placeholder">
+                  <span>📷</span>
+                </div>
+              </div>
+              <div class="listing-content">
+                <h3 class="listing-title">
+                  <%= link_to listing.title, listing, class: "listing-link" %>
+                </h3>
+                <p class="listing-location">📍 <%= listing.city || "Location not specified" %></p>
+                <p class="listing-description"><%= truncate(listing.description, length: 100) if listing.description %></p>
+                <div class="listing-footer">
+                  <span class="listing-price">
+                    <% if listing.price %>
+                      €<%= number_with_delimiter(listing.price.to_i) %>
+                    <% else %>
+                      Price on request
+                    <% end %>
+                  </span>
+                  <%= link_to "View", listing, class: "btn-view" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <p class="empty-message">No listings yet. Be the first to <%= link_to "post an ad", new_listing_path, class: "link" %>!</p>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to sell something?</h2>
+      <p>Post your ad for free - it only takes a minute!</p>
+      <%= link_to "Post Your Ad Now", new_listing_path, class: "btn-cta" %>
+    </div>
+  </section>
+</div>
+=======
 <p style="color: green"><%= notice %></p>
 
 <% content_for :title, "Listings" %>
@@ -14,3 +152,4 @@
 </div>
 
 <%= link_to "New listing", new_listing_path %>
+>>>>>>> Stashed changes
