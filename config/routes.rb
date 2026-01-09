@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
+  resources :messages
+  resources :users
+  resources :categories
   resources :listings
   resources :tasks
   root "listings#index"
