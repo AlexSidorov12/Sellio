@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <% content_for :title, "Sell.io - Buy & Sell Anything" %>
 
 <% if notice %>
@@ -134,3 +135,21 @@
     </div>
   </section>
 </div>
+=======
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Listings" %>
+
+<h1>Listings</h1>
+
+<div id="listings">
+  <% @listings.each do |listing| %>
+    <%= render listing %>
+    <p>
+      <%= link_to "Show this listing", listing %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New listing", new_listing_path %>
+>>>>>>> Stashed changes
