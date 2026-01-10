@@ -5,7 +5,8 @@
 <% end %>
 
 <div class="homepage">
-  <!-- Hero Section with Search -->
+  <!-- Hero Section with Search (only show on homepage) -->
+  <% unless params[:category_id].present? || params[:search].present? %>
   <section class="hero-section">
     <div class="hero-content">
       <h1 class="hero-title">Buy & Sell Anything</h1>
@@ -29,83 +30,100 @@
       </div>
     </div>
   </section>
+  <% end %>
 
-  <!-- Categories Section -->
+  <!-- Categories Section (only show on homepage, not on filtered listings page) -->
+  <% unless params[:category_id].present? || params[:search].present? %>
   <section class="categories-section">
     <div class="container">
       <h2 class="section-title">Browse by Category</h2>
       <div class="categories-grid">
         <% if @categories && @categories.any? %>
           <% @categories.each do |category| %>
-            <%= link_to listings_path(category_id: category.id), class: "category-card" do %>
+            <%= link_to "/listings?category_id=#{category.id}", class: "category-card", data: { turbo: false } do %>
               <div class="category-icon"><%= category.icon || "📦" %></div>
               <h3><%= category.name %></h3>
               <p><%= category.description || "Browse #{category.name} listings" %></p>
             <% end %>
           <% end %>
         <% else %>
-          <!-- Fallback categories if none in database -->
-          <div class="category-card">
+          <!-- Fallback categories if none in database - link by category name -->
+          <%= link_to listings_path(search: "Motors"), class: "category-card" do %>
             <div class="category-icon">🚗</div>
             <h3>Motors</h3>
             <p>Cars, Vans, Motorcycles</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Property"), class: "category-card" do %>
             <div class="category-icon">🏠</div>
             <h3>Property</h3>
             <p>Houses, Apartments, Land</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Jobs"), class: "category-card" do %>
             <div class="category-icon">💼</div>
             <h3>Jobs</h3>
             <p>Full-time, Part-time, Contract</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Electronics"), class: "category-card" do %>
             <div class="category-icon">📱</div>
             <h3>Electronics</h3>
             <p>Phones, Computers, TVs</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Furniture"), class: "category-card" do %>
             <div class="category-icon">🪑</div>
             <h3>Furniture</h3>
             <p>Home & Garden</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Fashion"), class: "category-card" do %>
             <div class="category-icon">👕</div>
             <h3>Fashion</h3>
             <p>Clothing & Accessories</p>
-          </div>
-          <div class="category-card">
+          <% end %>
+          <%= link_to listings_path(search: "Hobbies"), class: "category-card" do %>
             <div class="category-icon">🎮</div>
             <h3>Hobbies</h3>
             <p>Sports, Games, Books</p>
-          </div>
-        <div class="category-card">
-          <div class="category-icon">🐾</div>
-          <h3>Pets</h3>
-          <p>Dogs, Cats, Birds</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">🔧</div>
-          <h3>Services</h3>
-          <p>Babysitting, Car Valeting, Cleaning</p>
-        </div>
+          <% end %>
+          <%= link_to listings_path(search: "Pets"), class: "category-card" do %>
+            <div class="category-icon">🐾</div>
+            <h3>Pets</h3>
+            <p>Dogs, Cats, Birds</p>
+          <% end %>
+          <%= link_to listings_path(search: "Services"), class: "category-card" do %>
+            <div class="category-icon">🔧</div>
+            <h3>Services</h3>
+            <p>Babysitting, Car Valeting, Cleaning</p>
+          <% end %>
         <% end %>
       </div>
     </div>
   </section>
+  <% end %>
 
   <!-- Featured Listings Section -->
   <section class="listings-section">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Latest Ads</h2>
+        <% if @selected_category %>
+          <h2 class="section-title"><%= @selected_category.name %> Listings</h2>
+        <% elsif params[:category_id].present? || params[:search].present? %>
+          <h2 class="section-title">Search Results</h2>
+        <% else %>
+          <h2 class="section-title">Latest Ads</h2>
+        <% end %>
         <%= link_to "View All", listings_path, class: "view-all-link" %>
       </div>
       
       <% if @listings.any? %>
+        <% if @selected_category || params[:category_id].present? || params[:search].present? %>
+          <p class="filter-info" style="margin-bottom: 1.5rem; color: #666; font-size: 0.9375rem;">
+            Showing <%= @listings.count %> <%= @listings.count == 1 ? 'listing' : 'listings' %>
+            <% if @selected_category %>
+              in <%= @selected_category.name %>
+            <% end %>
+          </p>
+        <% end %>
         <div class="listings-grid">
-          <% @listings.limit(12).each do |listing| %>
+          <% (@selected_category || params[:category_id].present? || params[:search].present? ? @listings : @listings.limit(12)).each do |listing| %>
             <div class="listing-card">
               <div class="listing-image">
                 <% if listing.images.attached? %>
@@ -144,7 +162,8 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
+  <!-- CTA Section (only show on homepage) -->
+  <% unless params[:category_id].present? || params[:search].present? %>
   <section class="cta-section">
     <div class="container">
       <h2>Ready to sell something?</h2>
@@ -152,4 +171,5 @@
       <%= link_to "Post Your Ad Now", new_listing_path, class: "btn-cta" %>
     </div>
   </section>
+  <% end %>
 </div>

@@ -4,18 +4,35 @@ class ListingsController < ApplicationController
   # GET /listings or /listings.json
   def index
     @listings = Listing.all.order(created_at: :desc)
-    @categories = Category.all
-    
-    # Category filter
-    if params[:category_id].present?
-      @listings = @listings.where(category_id: params[:category_id])
+    # Order categories with Motors first, then alphabetically
+    all_categories = Category.all.order(:name)
+    motors_category = all_categories.find { |c| c.name.downcase == "motors" }
+    @categories = if motors_category
+      [motors_category] + (all_categories - [motors_category])
+    else
+      all_categories
     end
     
-    # Search functionality
+    # Category filter (by ID)
+    if params[:category_id].present?
+      @listings = @listings.where(category_id: params[:category_id])
+      @selected_category = Category.find_by(id: params[:category_id])
+    end
+    
+    # Search functionality (also handles category name searches from fallback categories)
     if params[:search].present?
-      @listings = @listings.where("title ILIKE ? OR description ILIKE ?", 
-                                   "%#{params[:search]}%", 
-                                   "%#{params[:search]}%")
+      search_term = "%#{params[:search]}%"
+      # First try to find by category name
+      category = Category.where("name ILIKE ?", search_term).first
+      if category
+        @listings = @listings.where(category_id: category.id)
+        @selected_category = category
+      else
+        # Otherwise search in title and description
+        @listings = @listings.where("title ILIKE ? OR description ILIKE ?", 
+                                     search_term, 
+                                     search_term)
+      end
     end
     
     # Location filter

@@ -10,12 +10,46 @@ class MessagesController < ApplicationController
 
   # GET /my_messages
   def my_messages
-    @received_messages = Message.where(recipient_id: current_user.id)
-                                .includes(:sender, :listing)
-                                .order(created_at: :desc)
-    @sent_messages = Message.where(sender_id: current_user.id)
-                           .includes(:recipient, :listing)
-                           .order(created_at: :desc)
+    # Get all messages where user is involved (sent or received)
+    all_messages = Message.where("sender_id = ? OR recipient_id = ?", current_user.id, current_user.id)
+                          .includes(:sender, :recipient, :listing)
+                          .order(created_at: :asc)
+    
+    # Group messages by listing and other user (conversation)
+    @conversations = {}
+    
+    all_messages.each do |message|
+      # Determine the other user in the conversation
+      other_user = message.sender == current_user ? message.recipient : message.sender
+      conversation_key = "#{message.listing_id}_#{other_user.id}"
+      
+      # Initialize conversation if it doesn't exist
+      unless @conversations[conversation_key]
+        @conversations[conversation_key] = {
+          listing: message.listing,
+          other_user: other_user,
+          messages: [],
+          unread_count: 0,
+          last_message_at: message.created_at
+        }
+      end
+      
+      # Add message to conversation
+      @conversations[conversation_key][:messages] << message
+      
+      # Count unread messages (only if current user is recipient)
+      if message.recipient == current_user && !message.read?
+        @conversations[conversation_key][:unread_count] += 1
+      end
+      
+      # Update last message time
+      if message.created_at > @conversations[conversation_key][:last_message_at]
+        @conversations[conversation_key][:last_message_at] = message.created_at
+      end
+    end
+    
+    # Sort conversations by last message time (most recent first)
+    @conversations = @conversations.sort_by { |_key, conv| conv[:last_message_at] }.reverse.to_h
   end
 
   # GET /messages/1
@@ -41,7 +75,8 @@ class MessagesController < ApplicationController
 
     respond_to do |format|
       if @message.save
-        format.html { redirect_to my_messages_path, notice: "Message sent successfully." }
+        # Redirect to the conversation (show the message)
+        format.html { redirect_to message_path(@message), notice: "Message sent successfully." }
         format.json { render :show, status: :created, location: @message }
       else
         format.html { render :new, status: :unprocessable_entity }

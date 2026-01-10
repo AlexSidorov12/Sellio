@@ -36,7 +36,11 @@
             <%= link_to "Post Ad", new_listing_path, class: "nav-link btn-post" %>
             <div class="dropdown">
               <button class="nav-link dropdown-toggle" type="button" id="accountDropdown" onclick="toggleDropdown()">
-                My Account ▼
+                <% if current_user.name.present? %>
+                  Hi <%= current_user.name.split.first %> ▼
+                <% else %>
+                  Hi <%= current_user.email.split('@').first %> ▼
+                <% end %>
               </button>
               <ul class="dropdown-menu" id="accountDropdownMenu">
                 <li><%= link_to "My Messages", my_messages_path, class: "dropdown-item" %></li>

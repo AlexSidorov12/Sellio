@@ -1,112 +1,59 @@
 <% content_for :title, "My Messages - Sell.io" %>
 
 <div class="messages-page">
-  <div class="container">
+  <div class="container" style="max-width: 900px;">
     <div class="page-header">
       <h1>My Messages</h1>
-      <p>View and manage your conversations</p>
+      <p>Your conversations</p>
     </div>
 
-    <div class="messages-tabs">
-      <button type="button" class="tab-button active" data-tab="received">Received (<%= @received_messages.count %>)</button>
-      <button type="button" class="tab-button" data-tab="sent">Sent (<%= @sent_messages.count %>)</button>
-    </div>
-
-    <!-- Received Messages -->
-    <div class="messages-section active" id="received-tab">
-      <% if @received_messages.any? %>
-        <div class="messages-list">
-          <% @received_messages.each do |message| %>
-            <div class="message-card <%= 'unread' unless message.read? %>">
-              <div class="message-header">
-                <div class="message-sender">
-                  <strong>From:</strong> <%= link_to (message.sender.name || message.sender.email), user_path(message.sender), class: "seller-link" %>
+    <% if @conversations.any? %>
+      <div class="conversations-list">
+        <% @conversations.each do |key, conversation| %>
+          <div class="conversation-card <%= 'has-unread' if conversation[:unread_count] > 0 %>">
+            <%= link_to message_path(conversation[:messages].last), class: "conversation-link" do %>
+              <div class="conversation-header">
+                <div class="conversation-user-info">
+                  <div class="user-avatar-small">
+                    <%= (conversation[:other_user].name || conversation[:other_user].email).first.upcase %>
+                  </div>
+                  <div class="conversation-details">
+                    <div class="conversation-user-name">
+                      <%= conversation[:other_user].name || conversation[:other_user].email %>
+                      <% if conversation[:unread_count] > 0 %>
+                        <span class="unread-badge-small"><%= conversation[:unread_count] %></span>
+                      <% end %>
+                    </div>
+                    <div class="conversation-listing">
+                      About: <%= conversation[:listing].title %>
+                    </div>
+                  </div>
                 </div>
-                <div class="message-meta">
-                  <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
-                  <% unless message.read? %>
-                    <span class="unread-badge">New</span>
-                  <% end %>
-                </div>
-              </div>
-              <div class="message-listing">
-                <strong>About:</strong> <%= link_to message.listing.title, message.listing, class: "listing-link" %>
-              </div>
-              <div class="message-content">
-                <%= truncate(message.content, length: 150) %>
-              </div>
-              <div class="message-actions">
-                <%= link_to "View Message", message_path(message), class: "btn-view-message" %>
-                <%= link_to "View Listing", message.listing, class: "btn-view-listing" %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="empty-state">
-          <p>You haven't received any messages yet.</p>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- Sent Messages -->
-    <div class="messages-section" id="sent-tab">
-      <% if @sent_messages.any? %>
-        <div class="messages-list">
-          <% @sent_messages.each do |message| %>
-            <div class="message-card">
-              <div class="message-header">
-                <div class="message-sender">
-                  <strong>To:</strong> <%= link_to (message.recipient.name || message.recipient.email), user_path(message.recipient), class: "seller-link" %>
-                </div>
-                <div class="message-meta">
-                  <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
-                  <span class="read-status"><%= message.read? ? "Read" : "Unread" %></span>
+                <div class="conversation-time">
+                  <%= time_ago_in_words(conversation[:last_message_at]) %> ago
                 </div>
               </div>
-              <div class="message-listing">
-                <strong>About:</strong> <%= link_to message.listing.title, message.listing, class: "listing-link" %>
+              
+              <div class="conversation-preview">
+                <% last_message = conversation[:messages].last %>
+                <div class="message-bubble-preview <%= 'sent' if last_message.sender == current_user %>">
+                  <div class="message-sender-preview">
+                    <%= last_message.sender == current_user ? 'You' : (last_message.sender.name || last_message.sender.email) %>:
+                  </div>
+                  <div class="message-text-preview">
+                    <%= truncate(last_message.content, length: 100) %>
+                  </div>
+                </div>
               </div>
-              <div class="message-content">
-                <%= truncate(message.content, length: 150) %>
-              </div>
-              <div class="message-actions">
-                <%= link_to "View Message", message_path(message), class: "btn-view-message" %>
-                <%= link_to "View Listing", message.listing, class: "btn-view-listing" %>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="empty-state">
-          <p>You haven't sent any messages yet.</p>
-        </div>
-      <% end %>
-    </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <p>You don't have any messages yet.</p>
+        <p>Start a conversation by contacting a seller on a listing!</p>
+      </div>
+    <% end %>
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.tab-button');
-    const sections = document.querySelectorAll('.messages-section');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetTab = this.getAttribute('data-tab');
-        
-        // Remove active class from all tabs and sections
-        tabs.forEach(t => t.classList.remove('active'));
-        sections.forEach(s => s.classList.remove('active'));
-        
-        // Add active class to clicked tab and corresponding section
-        this.classList.add('active');
-        const targetSection = document.getElementById(targetTab + '-tab');
-        if (targetSection) {
-          targetSection.classList.add('active');
-        }
-      });
-    });
-  });
-</script>
