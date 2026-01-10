@@ -1,0 +1,45 @@
+<% content_for :title, "Message - Sell.io" %>
+
+<div class="message-detail-page">
+  <div class="container">
+    <div class="message-detail-header">
+      <%= link_to "← Back to Messages", my_messages_path, class: "back-link" %>
+      <h1>Message Details</h1>
+    </div>
+
+    <div class="message-detail-card">
+      <div class="message-detail-info">
+        <div class="info-row">
+          <strong>From:</strong>
+          <span><%= @message.sender.name || @message.sender.email %></span>
+        </div>
+        <div class="info-row">
+          <strong>To:</strong>
+          <span><%= @message.recipient.name || @message.recipient.email %></span>
+        </div>
+        <div class="info-row">
+          <strong>Date:</strong>
+          <span><%= @message.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+        </div>
+        <div class="info-row">
+          <strong>About Listing:</strong>
+          <span><%= link_to @message.listing.title, @message.listing, class: "listing-link" %></span>
+        </div>
+      </div>
+
+      <div class="message-detail-content">
+        <h2>Message</h2>
+        <div class="message-text">
+          <%= simple_format(@message.content) %>
+        </div>
+      </div>
+
+      <div class="message-detail-actions">
+        <%= link_to "View Listing", @message.listing, class: "btn-view-listing" %>
+        <% if @message.recipient == current_user %>
+          <%= link_to "Reply", new_message_path(listing_id: @message.listing.id, recipient_id: @message.sender.id), class: "btn-reply" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

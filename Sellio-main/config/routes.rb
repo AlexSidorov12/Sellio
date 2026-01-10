@@ -2,7 +2,13 @@ Rails.application.routes.draw do
   devise_for :users
   resources :listings
   resources :tasks
+  resources :messages, only: [:index, :show, :new, :create]
   root "listings#index"
+  
+  # User account pages
+  get "my_listings", to: "listings#my_listings", as: :my_listings
+  get "my_messages", to: "messages#my_messages", as: :my_messages
+  
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

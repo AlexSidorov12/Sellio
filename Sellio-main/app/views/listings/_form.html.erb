@@ -1,8 +1,7 @@
-<%= form_with(model: listing) do |form| %>
+<%= form_with(model: listing, local: true, multipart: true) do |form| %>
   <% if listing.errors.any? %>
-    <div style="color: red">
+    <div class="form-errors">
       <h2><%= pluralize(listing.errors.count, "error") %> prohibited this listing from being saved:</h2>
-
       <ul>
         <% listing.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,27 +10,68 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, style: "display: block" %>
-    <%= form.text_field :title %>
-  </div>
+  <div class="form-container">
+    <div class="form-section">
+      <h2>Basic Information</h2>
+      
+      <div class="form-field">
+        <%= form.label :title, "Title *" %>
+        <%= form.text_field :title, placeholder: "e.g., iPhone 13 Pro Max 256GB" %>
+      </div>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.textarea :description %>
-  </div>
+      <div class="form-field">
+        <%= form.label :category_id, "Category *" %>
+        <%= form.collection_select :category_id, Category.all.order(:name), :id, :name, 
+            { prompt: "Select a category" }, { class: "form-select", required: true } %>
+      </div>
 
-  <div>
-    <%= form.label :price, style: "display: block" %>
-    <%= form.text_field :price %>
-  </div>
+      <div class="form-field">
+        <%= form.label :description, "Description *" %>
+        <%= form.text_area :description, rows: 6, placeholder: "Describe your item in detail..." %>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :city, style: "display: block" %>
-    <%= form.text_field :city %>
-  </div>
+    <div class="form-section">
+      <h2>Pricing & Location</h2>
+      
+      <div class="form-field">
+        <%= form.label :price, "Price (€) *" %>
+        <%= form.number_field :price, step: 0.01, min: 0, placeholder: "0.00" %>
+      </div>
 
-  <div>
-    <%= form.submit %>
+      <div class="form-field">
+        <%= form.label :city, "County *" %>
+        <%= form.select :city, options_for_select(irish_counties.map { |county| [county, county] }, listing.city), 
+            { prompt: "Select a county" }, { class: "form-select", required: true } %>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Images</h2>
+      <p class="form-help">Upload up to 10 images of your item</p>
+      
+      <div class="form-field">
+        <%= form.label :images, "Photos" %>
+        <%= form.file_field :images, multiple: true, accept: "image/*", class: "file-input" %>
+      </div>
+
+      <% if listing.persisted? && listing.images.attached? %>
+        <div class="existing-images">
+          <p>Current images:</p>
+          <div class="existing-images-grid">
+            <% listing.images.each do |image| %>
+              <div class="existing-image-item">
+                <%= image_tag image, class: "existing-image" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit listing.persisted? ? "Update Listing" : "Create Listing", class: "btn-submit" %>
+      <%= link_to "Cancel", listing.persisted? ? listing_path(listing) : listings_path, class: "btn-cancel" %>
+    </div>
   </div>
 <% end %>

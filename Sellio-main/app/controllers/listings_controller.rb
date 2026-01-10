@@ -4,6 +4,12 @@ class ListingsController < ApplicationController
   # GET /listings or /listings.json
   def index
     @listings = Listing.all.order(created_at: :desc)
+    @categories = Category.all
+    
+    # Category filter
+    if params[:category_id].present?
+      @listings = @listings.where(category_id: params[:category_id])
+    end
     
     # Search functionality
     if params[:search].present?
@@ -25,15 +31,19 @@ class ListingsController < ApplicationController
   # GET /listings/new
   def new
     @listing = Listing.new
+    @categories = Category.all
   end
 
   # GET /listings/1/edit
   def edit
+    @categories = Category.all
   end
 
   # POST /listings or /listings.json
   def create
     @listing = Listing.new(listing_params)
+    @listing.user = current_user if user_signed_in?
+    @categories = Category.all
 
     respond_to do |format|
       if @listing.save
@@ -69,6 +79,11 @@ class ListingsController < ApplicationController
     end
   end
 
+  # GET /my_listings
+  def my_listings
+    @listings = Listing.where(user_id: current_user.id).order(created_at: :desc)
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_listing
@@ -77,6 +92,6 @@ class ListingsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def listing_params
-      params.expect(listing: [ :title, :description, :price, :city ])
+      params.expect(listing: [ :title, :description, :price, :city, :category_id, images: [] ])
     end
 end

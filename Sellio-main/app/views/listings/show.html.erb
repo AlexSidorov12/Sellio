@@ -1,10 +1,81 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @listing.title %>
 
-<%= render @listing %>
+<% if notice %>
+  <div class="alert alert-success"><%= notice %></div>
+<% end %>
 
-<div>
-  <%= link_to "Edit this listing", edit_listing_path(@listing) %> |
-  <%= link_to "Back to listings", listings_path %>
+<div class="listing-detail">
+  <div class="listing-detail-container">
+    <!-- Images Section -->
+    <div class="listing-images-section">
+      <% if @listing.images.attached? %>
+        <div class="main-image">
+          <%= image_tag @listing.images.first, class: "listing-main-image" %>
+        </div>
+        <% if @listing.images.count > 1 %>
+          <div class="thumbnail-images">
+            <% @listing.images.each do |image| %>
+              <%= image_tag image, class: "thumbnail-image" %>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="image-placeholder-large">
+          <span>📷</span>
+          <p>No images available</p>
+        </div>
+      <% end %>
+    </div>
 
-  <%= button_to "Destroy this listing", @listing, method: :delete %>
+    <!-- Details Section -->
+    <div class="listing-details-section">
+      <div class="listing-header">
+        <h1 class="listing-detail-title"><%= @listing.title %></h1>
+        <div class="listing-meta">
+          <% if @listing.category %>
+            <span class="category-badge"><%= @listing.category.name %></span>
+          <% end %>
+          <span class="listing-date">Posted <%= time_ago_in_words(@listing.created_at) %> ago</span>
+        </div>
+      </div>
+
+      <div class="listing-price-section">
+        <span class="listing-price-large">
+          <% if @listing.price %>
+            €<%= number_with_delimiter(@listing.price.to_i) %>
+          <% else %>
+            Price on request
+          <% end %>
+        </span>
+      </div>
+
+      <div class="listing-info">
+        <div class="info-item">
+          <strong>📍 Location:</strong>
+          <span><%= @listing.city || "Not specified" %></span>
+        </div>
+        <% if @listing.user %>
+          <div class="info-item">
+            <strong>👤 Seller:</strong>
+            <span><%= @listing.user.name || @listing.user.email %></span>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="listing-description">
+        <h2>Description</h2>
+        <p><%= simple_format(@listing.description) %></p>
+      </div>
+
+      <div class="listing-actions">
+        <% if user_signed_in? && current_user == @listing.user %>
+          <%= link_to "Edit Listing", edit_listing_path(@listing), class: "btn-edit" %>
+          <%= button_to "Delete Listing", @listing, method: :delete, 
+                        data: { confirm: "Are you sure?" }, 
+                        class: "btn-delete" %>
+        <% end %>
+        <%= link_to "Back to Listings", listings_path, class: "btn-back" %>
+      </div>
+    </div>
+  </div>
 </div>

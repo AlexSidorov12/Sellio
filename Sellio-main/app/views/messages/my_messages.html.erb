@@ -1,0 +1,108 @@
+<% content_for :title, "My Messages - Sell.io" %>
+
+<div class="messages-page">
+  <div class="container">
+    <div class="page-header">
+      <h1>My Messages</h1>
+      <p>View and manage your conversations</p>
+    </div>
+
+    <div class="messages-tabs">
+      <button class="tab-button active" data-tab="received">Received (<%= @received_messages.count %>)</button>
+      <button class="tab-button" data-tab="sent">Sent (<%= @sent_messages.count %>)</button>
+    </div>
+
+    <!-- Received Messages -->
+    <div class="messages-section active" id="received-tab">
+      <% if @received_messages.any? %>
+        <div class="messages-list">
+          <% @received_messages.each do |message| %>
+            <div class="message-card <%= 'unread' unless message.read? %>">
+              <div class="message-header">
+                <div class="message-sender">
+                  <strong>From:</strong> <%= message.sender.name || message.sender.email %>
+                </div>
+                <div class="message-meta">
+                  <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
+                  <% unless message.read? %>
+                    <span class="unread-badge">New</span>
+                  <% end %>
+                </div>
+              </div>
+              <div class="message-listing">
+                <strong>About:</strong> <%= link_to message.listing.title, message.listing, class: "listing-link" %>
+              </div>
+              <div class="message-content">
+                <%= truncate(message.content, length: 150) %>
+              </div>
+              <div class="message-actions">
+                <%= link_to "View Message", message_path(message), class: "btn-view-message" %>
+                <%= link_to "View Listing", message.listing, class: "btn-view-listing" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <p>You haven't received any messages yet.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Sent Messages -->
+    <div class="messages-section" id="sent-tab">
+      <% if @sent_messages.any? %>
+        <div class="messages-list">
+          <% @sent_messages.each do |message| %>
+            <div class="message-card">
+              <div class="message-header">
+                <div class="message-sender">
+                  <strong>To:</strong> <%= message.recipient.name || message.recipient.email %>
+                </div>
+                <div class="message-meta">
+                  <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
+                  <span class="read-status"><%= message.read? ? "Read" : "Unread" %></span>
+                </div>
+              </div>
+              <div class="message-listing">
+                <strong>About:</strong> <%= link_to message.listing.title, message.listing, class: "listing-link" %>
+              </div>
+              <div class="message-content">
+                <%= truncate(message.content, length: 150) %>
+              </div>
+              <div class="message-actions">
+                <%= link_to "View Message", message_path(message), class: "btn-view-message" %>
+                <%= link_to "View Listing", message.listing, class: "btn-view-listing" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <p>You haven't sent any messages yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab-button');
+    const sections = document.querySelectorAll('.messages-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const targetTab = this.getAttribute('data-tab');
+        
+        // Remove active class from all tabs and sections
+        tabs.forEach(t => t.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding section
+        this.classList.add('active');
+        document.getElementById(targetTab + '-tab').classList.add('active');
+      });
+    });
+  });
+</script>

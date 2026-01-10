@@ -35,46 +35,62 @@
     <div class="container">
       <h2 class="section-title">Browse by Category</h2>
       <div class="categories-grid">
-        <div class="category-card">
-          <div class="category-icon">🚗</div>
-          <h3>Motors</h3>
-          <p>Cars, Vans, Motorcycles</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">🏠</div>
-          <h3>Property</h3>
-          <p>Houses, Apartments, Land</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">💼</div>
-          <h3>Jobs</h3>
-          <p>Full-time, Part-time, Contract</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">📱</div>
-          <h3>Electronics</h3>
-          <p>Phones, Computers, TVs</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">🪑</div>
-          <h3>Furniture</h3>
-          <p>Home & Garden</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">👕</div>
-          <h3>Fashion</h3>
-          <p>Clothing & Accessories</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">🎮</div>
-          <h3>Hobbies</h3>
-          <p>Sports, Games, Books</p>
-        </div>
+        <% if @categories && @categories.any? %>
+          <% @categories.each do |category| %>
+            <%= link_to listings_path(category_id: category.id), class: "category-card" do %>
+              <div class="category-icon"><%= category.icon || "📦" %></div>
+              <h3><%= category.name %></h3>
+              <p><%= category.description || "Browse #{category.name} listings" %></p>
+            <% end %>
+          <% end %>
+        <% else %>
+          <!-- Fallback categories if none in database -->
+          <div class="category-card">
+            <div class="category-icon">🚗</div>
+            <h3>Motors</h3>
+            <p>Cars, Vans, Motorcycles</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">🏠</div>
+            <h3>Property</h3>
+            <p>Houses, Apartments, Land</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">💼</div>
+            <h3>Jobs</h3>
+            <p>Full-time, Part-time, Contract</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">📱</div>
+            <h3>Electronics</h3>
+            <p>Phones, Computers, TVs</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">🪑</div>
+            <h3>Furniture</h3>
+            <p>Home & Garden</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">👕</div>
+            <h3>Fashion</h3>
+            <p>Clothing & Accessories</p>
+          </div>
+          <div class="category-card">
+            <div class="category-icon">🎮</div>
+            <h3>Hobbies</h3>
+            <p>Sports, Games, Books</p>
+          </div>
         <div class="category-card">
           <div class="category-icon">🐾</div>
           <h3>Pets</h3>
           <p>Dogs, Cats, Birds</p>
         </div>
+        <div class="category-card">
+          <div class="category-icon">🔧</div>
+          <h3>Services</h3>
+          <p>Babysitting, Car Valeting, Cleaning</p>
+        </div>
+        <% end %>
       </div>
     </div>
   </section>
@@ -92,10 +108,13 @@
           <% @listings.limit(12).each do |listing| %>
             <div class="listing-card">
               <div class="listing-image">
-                <!-- Placeholder for image - you'll add image support later -->
-                <div class="image-placeholder">
-                  <span>📷</span>
-                </div>
+                <% if listing.images.attached? %>
+                  <%= image_tag listing.images.first, class: "listing-card-image" %>
+                <% else %>
+                  <div class="image-placeholder">
+                    <span>📷</span>
+                  </div>
+                <% end %>
               </div>
               <div class="listing-content">
                 <h3 class="listing-title">
