@@ -57,7 +57,7 @@
         <% if @listing.user %>
           <div class="info-item">
             <strong>👤 Seller:</strong>
-            <span><%= @listing.user.name || @listing.user.email %></span>
+            <span><%= link_to (@listing.user.name || @listing.user.email), user_path(@listing.user), class: "seller-link" %></span>
           </div>
         <% end %>
       </div>

@@ -8,8 +8,8 @@
     </div>
 
     <div class="messages-tabs">
-      <button class="tab-button active" data-tab="received">Received (<%= @received_messages.count %>)</button>
-      <button class="tab-button" data-tab="sent">Sent (<%= @sent_messages.count %>)</button>
+      <button type="button" class="tab-button active" data-tab="received">Received (<%= @received_messages.count %>)</button>
+      <button type="button" class="tab-button" data-tab="sent">Sent (<%= @sent_messages.count %>)</button>
     </div>
 
     <!-- Received Messages -->
@@ -20,7 +20,7 @@
             <div class="message-card <%= 'unread' unless message.read? %>">
               <div class="message-header">
                 <div class="message-sender">
-                  <strong>From:</strong> <%= message.sender.name || message.sender.email %>
+                  <strong>From:</strong> <%= link_to (message.sender.name || message.sender.email), user_path(message.sender), class: "seller-link" %>
                 </div>
                 <div class="message-meta">
                   <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
@@ -57,7 +57,7 @@
             <div class="message-card">
               <div class="message-header">
                 <div class="message-sender">
-                  <strong>To:</strong> <%= message.recipient.name || message.recipient.email %>
+                  <strong>To:</strong> <%= link_to (message.recipient.name || message.recipient.email), user_path(message.recipient), class: "seller-link" %>
                 </div>
                 <div class="message-meta">
                   <span class="message-date"><%= time_ago_in_words(message.created_at) %> ago</span>
@@ -92,7 +92,8 @@
     const sections = document.querySelectorAll('.messages-section');
 
     tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
+      tab.addEventListener('click', function(e) {
+        e.preventDefault();
         const targetTab = this.getAttribute('data-tab');
         
         // Remove active class from all tabs and sections
@@ -101,7 +102,10 @@
         
         // Add active class to clicked tab and corresponding section
         this.classList.add('active');
-        document.getElementById(targetTab + '-tab').classList.add('active');
+        const targetSection = document.getElementById(targetTab + '-tab');
+        if (targetSection) {
+          targetSection.classList.add('active');
+        }
       });
     });
   });

@@ -11,11 +11,11 @@
       <div class="message-detail-info">
         <div class="info-row">
           <strong>From:</strong>
-          <span><%= @message.sender.name || @message.sender.email %></span>
+          <span><%= link_to (@message.sender.name || @message.sender.email), user_path(@message.sender), class: "seller-link" %></span>
         </div>
         <div class="info-row">
           <strong>To:</strong>
-          <span><%= @message.recipient.name || @message.recipient.email %></span>
+          <span><%= link_to (@message.recipient.name || @message.recipient.email), user_path(@message.recipient), class: "seller-link" %></span>
         </div>
         <div class="info-row">
           <strong>Date:</strong>

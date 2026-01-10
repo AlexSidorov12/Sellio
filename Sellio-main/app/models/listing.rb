@@ -7,9 +7,6 @@ class Listing < ApplicationRecord
   validates :description, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   
-  # Store extra fields as JSON
-  serialize :extra_fields, coder: JSON if Rails.env.development? || Rails.env.test?
-  
   # Helper methods for car-specific fields
   def license_plate
     extra_fields&.dig('license_plate')

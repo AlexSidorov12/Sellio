@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :listings
   resources :tasks
   resources :messages, only: [:index, :show, :new, :create]
+  resources :users, only: [:show]
   root "listings#index"
   
   # User account pages
