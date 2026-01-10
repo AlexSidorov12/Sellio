@@ -10,13 +10,13 @@ Rails.application.routes.draw do
   get "my_messages", to: "messages#my_messages", as: :my_messages
   get "my_saved_ads", to: "favorites#index", as: :my_saved_ads
   
+  # Vehicle registration lookup (must be before resources to avoid conflicts)
+  post 'vehicle_lookup', to: 'vehicle_lookup#lookup', as: 'vehicle_lookup'
+  
   # Listings with favorites
   resources :listings do
     resources :favorites, only: [:create, :destroy]
   end
-  
-  # Vehicle registration lookup
-  post '/vehicle_lookup', to: 'vehicle_lookup#lookup', as: 'vehicle_lookup'
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
