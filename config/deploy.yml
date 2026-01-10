@@ -1,13 +1,13 @@
 # Name of your application. Used to uniquely configure containers.
-service: my_website
+service: sellio
 
 # Name of the container image (use your-user/app-name on external registries).
-image: my_website
+image: sellio
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 127.0.0.1
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -27,7 +27,7 @@ servers:
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  server: localhost:5433
 
   # Needed for authenticated registries.
   # username: your-user
