@@ -26,21 +26,29 @@
   <body>
     <header class="main-header">
       <div class="header-container">
-        <div class="logo">
-          <h1><%= link_to "Sell.io", root_path %></h1>
-          <p class="tagline">Buy & Sell Anything - Free & Easy</p>
+        <div class="header-left">
+          <div class="logo">
+          <%= link_to root_path, class: "logo-link" do %>
+            <%= image_tag "SellioMainLogo.png", alt: "Sell.io", class: "logo-image" %>
+          <% end %>
+          </div>
         </div>
         <nav class="main-nav">
-          <%= link_to "Browse Ads", listings_path, class: "nav-link" %>
+          <%= link_to "Browse", listings_path, class: "nav-link" %>
+          <%= link_to "Sell", new_listing_path, class: "nav-link" %>
           <% if user_signed_in? %>
-            <%= link_to "Post Ad", new_listing_path, class: "nav-link btn-post" %>
             <%= link_to my_messages_path, class: "nav-link messages-icon-link" do %>
-              <span class="messages-icon">💬</span>
+              <span class="messages-icon">🔍</span>
               <% unread_count = current_user.unread_messages_count %>
               <% if unread_count > 0 %>
                 <span class="messages-badge"><%= unread_count %></span>
               <% end %>
             <% end %>
+          <% end %>
+        </nav>
+        <div class="header-right">
+          <% if user_signed_in? %>
+            <%= link_to "Place Ad", new_listing_path, class: "btn-place-ad" %>
             <div class="dropdown">
               <button class="nav-link dropdown-toggle" type="button" id="accountDropdown" onclick="toggleDropdown()">
                 <div class="header-avatar-container">
@@ -73,7 +81,6 @@
               function toggleDropdown() {
                 document.getElementById('accountDropdownMenu').classList.toggle('show');
               }
-              // Close dropdown when clicking outside
               window.onclick = function(event) {
                 if (!event.target.matches('.dropdown-toggle') && !event.target.closest('.dropdown')) {
                   var dropdowns = document.getElementsByClassName('dropdown-menu');
@@ -87,10 +94,10 @@
               }
             </script>
           <% else %>
-            <%= link_to "Login", new_user_session_path, class: "nav-link" %>
-            <%= link_to "Sign Up", new_user_registration_path, class: "nav-link btn-signup" %>
+            <%= link_to "Place Ad", new_listing_path, class: "btn-place-ad" %>
+            <%= link_to "Sign up or Login", new_user_session_path, class: "nav-link nav-login" %>
           <% end %>
-        </nav>
+        </div>
       </div>
     </header>
 
