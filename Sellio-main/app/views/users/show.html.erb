@@ -4,9 +4,13 @@
   <div class="container">
     <div class="profile-header">
       <div class="profile-avatar">
-        <div class="avatar-placeholder">
-          <%= (@user.name || @user.email).first.upcase %>
-        </div>
+        <% if @user.avatar.attached? %>
+          <%= image_tag @user.avatar, class: "avatar-image" %>
+        <% else %>
+          <div class="avatar-placeholder">
+            <%= (@user.name || @user.email).first.upcase %>
+          </div>
+        <% end %>
       </div>
       <div class="profile-info">
         <h1><%= @user.name || @user.email %></h1>

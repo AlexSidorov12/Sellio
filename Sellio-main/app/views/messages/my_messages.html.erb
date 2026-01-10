@@ -15,7 +15,11 @@
               <div class="conversation-header">
                 <div class="conversation-user-info">
                   <div class="user-avatar-small">
-                    <%= (conversation[:other_user].name || conversation[:other_user].email).first.upcase %>
+                    <% if conversation[:other_user].avatar.attached? %>
+                      <%= image_tag conversation[:other_user].avatar, class: "avatar-image-small" %>
+                    <% else %>
+                      <%= (conversation[:other_user].name || conversation[:other_user].email).first.upcase %>
+                    <% end %>
                   </div>
                   <div class="conversation-details">
                     <div class="conversation-user-name">

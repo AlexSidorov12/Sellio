@@ -10,4 +10,12 @@ class User < ApplicationRecord
   has_many :received_messages, class_name: 'Message', foreign_key: 'recipient_id'
   has_many :favorites, dependent: :destroy
   has_many :favorite_listings, through: :favorites, source: :listing
+  
+  # Profile picture
+  has_one_attached :avatar
+  
+  # Helper method to get unread messages count
+  def unread_messages_count
+    received_messages.where(read: false).count
+  end
 end

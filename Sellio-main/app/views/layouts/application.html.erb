@@ -34,13 +34,32 @@
           <%= link_to "Browse Ads", listings_path, class: "nav-link" %>
           <% if user_signed_in? %>
             <%= link_to "Post Ad", new_listing_path, class: "nav-link btn-post" %>
+            <%= link_to my_messages_path, class: "nav-link messages-icon-link" do %>
+              <span class="messages-icon">💬</span>
+              <% unread_count = current_user.unread_messages_count %>
+              <% if unread_count > 0 %>
+                <span class="messages-badge"><%= unread_count %></span>
+              <% end %>
+            <% end %>
             <div class="dropdown">
               <button class="nav-link dropdown-toggle" type="button" id="accountDropdown" onclick="toggleDropdown()">
-                <% if current_user.name.present? %>
-                  Hi <%= current_user.name.split.first %> ▼
-                <% else %>
-                  Hi <%= current_user.email.split('@').first %> ▼
-                <% end %>
+                <div class="header-avatar-container">
+                  <% if current_user.avatar.attached? %>
+                    <%= image_tag current_user.avatar, class: "header-avatar" %>
+                  <% else %>
+                    <div class="header-avatar-placeholder">
+                      <%= (current_user.name || current_user.email).first.upcase %>
+                    </div>
+                  <% end %>
+                </div>
+                <span class="header-greeting">
+                  <% if current_user.name.present? %>
+                    Hi <%= current_user.name.split.first %>
+                  <% else %>
+                    Hi <%= current_user.email.split('@').first %>
+                  <% end %>
+                </span>
+                <span class="dropdown-arrow">▼</span>
               </button>
               <ul class="dropdown-menu" id="accountDropdownMenu">
                 <li><%= link_to "My Messages", my_messages_path, class: "dropdown-item" %></li>

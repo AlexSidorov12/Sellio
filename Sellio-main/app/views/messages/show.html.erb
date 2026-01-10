@@ -19,7 +19,11 @@
       <%= link_to "← Back to Messages", my_messages_path, class: "back-link" %>
       <div class="chat-header-info">
         <div class="chat-user-avatar">
-          <%= (other_user.name || other_user.email).first.upcase %>
+          <% if other_user.avatar.attached? %>
+            <%= image_tag other_user.avatar, class: "avatar-image-small" %>
+          <% else %>
+            <%= (other_user.name || other_user.email).first.upcase %>
+          <% end %>
         </div>
         <div class="chat-header-details">
           <h1><%= other_user.name || other_user.email %></h1>
