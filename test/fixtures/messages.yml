@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  listing: one
+  sender_id: 
+  recipient_id: 
+  content: MyText
+  read: false
+
+two:
+  listing: two
+  sender_id: 
+  recipient_id: 
+  content: MyText
+  read: false
