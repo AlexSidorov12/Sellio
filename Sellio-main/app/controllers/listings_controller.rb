@@ -39,6 +39,41 @@ class ListingsController < ApplicationController
     if params[:location].present?
       @listings = @listings.where("city ILIKE ?", "%#{params[:location]}%")
     end
+    
+    # Car-specific filters (only apply if Motors category is selected or car filters are used)
+    if params[:category_id].present? && Category.find_by(id: params[:category_id])&.name&.downcase == "motors" || 
+       params[:make].present? || params[:model].present? || params[:min_year].present? || 
+       params[:max_year].present? || params[:min_price].present? || params[:max_price].present?
+      
+      # Ensure we are only filtering within the Motors category if specific car filters are applied
+      motors_category_id = Category.find_by("name ILIKE ?", "%motor%")&.id
+      @listings = @listings.where(category_id: motors_category_id) if motors_category_id && (params[:make].present? || params[:model].present? || params[:min_year].present? || params[:max_year].present?)
+
+      if params[:make].present?
+        @listings = @listings.where("extra_fields->>'make' ILIKE ?", "%#{params[:make]}%")
+      end
+      
+      if params[:model].present?
+        @listings = @listings.where("extra_fields->>'model' ILIKE ?", "%#{params[:model]}%")
+      end
+      
+      if params[:min_year].present?
+        @listings = @listings.where("CAST(extra_fields->>'year' AS INTEGER) >= ?", params[:min_year].to_i)
+      end
+      
+      if params[:max_year].present?
+        @listings = @listings.where("CAST(extra_fields->>'year' AS INTEGER) <= ?", params[:max_year].to_i)
+      end
+    end
+    
+    # Price filters (apply to all categories)
+    if params[:min_price].present?
+      @listings = @listings.where("price >= ?", params[:min_price].to_i)
+    end
+    
+    if params[:max_price].present?
+      @listings = @listings.where("price <= ?", params[:max_price].to_i)
+    end
   end
 
   # GET /listings/1 or /listings/1.json
@@ -112,17 +147,37 @@ class ListingsController < ApplicationController
       base_params = params.require(:listing).permit(
         :title, :description, :price, :city, :category_id,
         :make, :model, :year, :mileage, :engine_size,
-        :fuel_type, :transmission, :previous_owners, :license_plate,
+        :fuel_type, :transmission, :previous_owners,
+        :vehicle_registration, :performance, :dimensions, :features, :running_costs,
         images: []
       )
       
       # Build extra_fields hash for category-specific data
       extra_fields = {}
-      motors_fields = [:make, :model, :year, :mileage, :engine_size, :fuel_type, :transmission, :previous_owners, :license_plate]
+      motors_fields = [:make, :model, :year, :mileage, :engine_size, :fuel_type, :transmission, :previous_owners]
       
       motors_fields.each do |field|
         if base_params[field].present?
           extra_fields[field.to_s] = base_params[field]
+          base_params = base_params.except(field)
+        end
+      end
+      
+      # Store vehicle registration privately (not in public extra_fields)
+      if base_params[:vehicle_registration].present?
+        extra_fields['vehicle_registration'] = base_params[:vehicle_registration]
+        base_params = base_params.except(:vehicle_registration)
+      end
+      
+      # Store performance, dimensions, features, running_costs
+      [:performance, :dimensions, :features, :running_costs].each do |field|
+        if base_params[field].present?
+          begin
+            parsed_data = JSON.parse(base_params[field]) if base_params[field].is_a?(String)
+            extra_fields[field.to_s] = parsed_data if parsed_data
+          rescue JSON::ParserError
+            # Invalid JSON, skip
+          end
           base_params = base_params.except(field)
         end
       end

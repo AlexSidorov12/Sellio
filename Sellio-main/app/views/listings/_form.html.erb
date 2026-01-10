@@ -36,23 +36,95 @@
     <div class="form-section" id="motors-fields" style="display: none;">
       <h2>Vehicle Details</h2>
       
-      <div class="form-row">
+      <div class="form-field">
+        <label for="vehicle_registration_lookup">Vehicle Registration (Auto-fill details)</label>
+        <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+          <input type="text" id="vehicle_registration_lookup" placeholder="e.g., 181-D-12345" style="text-transform: uppercase; flex: 1;" class="form-input">
+          <button type="button" id="lookup_registration_btn" class="btn-lookup" style="padding: 0.75rem 1.5rem; background: #4FD1A5; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Lookup</button>
+        </div>
+        <p class="form-help" style="margin-top: 0.5rem; font-size: 0.7rem; color: #9CA3AF; line-height: 1.4;">
+          Enter your vehicle registration to auto-fill details. 
+          <span style="font-weight: 500; color: #6B7280;">Your registration number will not be displayed publicly.</span>
+        </p>
+        <div id="lookup_status" style="margin-top: 0.5rem; display: none;"></div>
+      </div>
+      
+      <!-- Hidden fields for vehicle data from registration lookup -->
+      <input type="hidden" name="listing[vehicle_registration]" id="listing_vehicle_registration" value="<%= listing.extra_fields&.dig('vehicle_registration') %>">
+      <input type="hidden" name="listing[performance]" id="listing_performance" value="<%= listing.extra_fields&.dig('performance')&.to_json if listing.extra_fields&.dig('performance') %>">
+      <input type="hidden" name="listing[dimensions]" id="listing_dimensions" value="<%= listing.extra_fields&.dig('dimensions')&.to_json if listing.extra_fields&.dig('dimensions') %>">
+      <input type="hidden" name="listing[features]" id="listing_features" value="<%= listing.extra_fields&.dig('features')&.to_json if listing.extra_fields&.dig('features') %>">
+      <input type="hidden" name="listing[running_costs]" id="listing_running_costs" value="<%= listing.extra_fields&.dig('running_costs')&.to_json if listing.extra_fields&.dig('running_costs') %>">
+      
       <div class="form-row">
         <div class="form-field">
           <label for="listing_make">Make</label>
-          <input type="text" name="listing[make]" id="listing_make" value="<%= listing.extra_fields&.dig('make') %>" placeholder="e.g., Toyota, Ford, BMW" class="form-input">
+          <select name="listing[make]" id="listing_make" class="form-select">
+            <option value="">Select Make</option>
+            <option value="Alfa Romeo" <%= 'selected' if listing.extra_fields&.dig('make') == 'Alfa Romeo' %>>Alfa Romeo</option>
+            <option value="Aston Martin" <%= 'selected' if listing.extra_fields&.dig('make') == 'Aston Martin' %>>Aston Martin</option>
+            <option value="Audi" <%= 'selected' if listing.extra_fields&.dig('make') == 'Audi' %>>Audi</option>
+            <option value="Bentley" <%= 'selected' if listing.extra_fields&.dig('make') == 'Bentley' %>>Bentley</option>
+            <option value="BMW" <%= 'selected' if listing.extra_fields&.dig('make') == 'BMW' %>>BMW</option>
+            <option value="Chevrolet" <%= 'selected' if listing.extra_fields&.dig('make') == 'Chevrolet' %>>Chevrolet</option>
+            <option value="Chrysler" <%= 'selected' if listing.extra_fields&.dig('make') == 'Chrysler' %>>Chrysler</option>
+            <option value="Citroen" <%= 'selected' if listing.extra_fields&.dig('make') == 'Citroen' %>>Citroen</option>
+            <option value="Dacia" <%= 'selected' if listing.extra_fields&.dig('make') == 'Dacia' %>>Dacia</option>
+            <option value="Dodge" <%= 'selected' if listing.extra_fields&.dig('make') == 'Dodge' %>>Dodge</option>
+            <option value="Ferrari" <%= 'selected' if listing.extra_fields&.dig('make') == 'Ferrari' %>>Ferrari</option>
+            <option value="Fiat" <%= 'selected' if listing.extra_fields&.dig('make') == 'Fiat' %>>Fiat</option>
+            <option value="Ford" <%= 'selected' if listing.extra_fields&.dig('make') == 'Ford' %>>Ford</option>
+            <option value="Honda" <%= 'selected' if listing.extra_fields&.dig('make') == 'Honda' %>>Honda</option>
+            <option value="Hyundai" <%= 'selected' if listing.extra_fields&.dig('make') == 'Hyundai' %>>Hyundai</option>
+            <option value="Infiniti" <%= 'selected' if listing.extra_fields&.dig('make') == 'Infiniti' %>>Infiniti</option>
+            <option value="Jaguar" <%= 'selected' if listing.extra_fields&.dig('make') == 'Jaguar' %>>Jaguar</option>
+            <option value="Jeep" <%= 'selected' if listing.extra_fields&.dig('make') == 'Jeep' %>>Jeep</option>
+            <option value="Kia" <%= 'selected' if listing.extra_fields&.dig('make') == 'Kia' %>>Kia</option>
+            <option value="Lamborghini" <%= 'selected' if listing.extra_fields&.dig('make') == 'Lamborghini' %>>Lamborghini</option>
+            <option value="Land Rover" <%= 'selected' if listing.extra_fields&.dig('make') == 'Land Rover' %>>Land Rover</option>
+            <option value="Lexus" <%= 'selected' if listing.extra_fields&.dig('make') == 'Lexus' %>>Lexus</option>
+            <option value="Maserati" <%= 'selected' if listing.extra_fields&.dig('make') == 'Maserati' %>>Maserati</option>
+            <option value="Mazda" <%= 'selected' if listing.extra_fields&.dig('make') == 'Mazda' %>>Mazda</option>
+            <option value="McLaren" <%= 'selected' if listing.extra_fields&.dig('make') == 'McLaren' %>>McLaren</option>
+            <option value="Mercedes-Benz" <%= 'selected' if listing.extra_fields&.dig('make') == 'Mercedes-Benz' %>>Mercedes-Benz</option>
+            <option value="Mini" <%= 'selected' if listing.extra_fields&.dig('make') == 'Mini' %>>Mini</option>
+            <option value="Mitsubishi" <%= 'selected' if listing.extra_fields&.dig('make') == 'Mitsubishi' %>>Mitsubishi</option>
+            <option value="Nissan" <%= 'selected' if listing.extra_fields&.dig('make') == 'Nissan' %>>Nissan</option>
+            <option value="Opel" <%= 'selected' if listing.extra_fields&.dig('make') == 'Opel' %>>Opel</option>
+            <option value="Peugeot" <%= 'selected' if listing.extra_fields&.dig('make') == 'Peugeot' %>>Peugeot</option>
+            <option value="Porsche" <%= 'selected' if listing.extra_fields&.dig('make') == 'Porsche' %>>Porsche</option>
+            <option value="Renault" <%= 'selected' if listing.extra_fields&.dig('make') == 'Renault' %>>Renault</option>
+            <option value="Rolls-Royce" <%= 'selected' if listing.extra_fields&.dig('make') == 'Rolls-Royce' %>>Rolls-Royce</option>
+            <option value="Seat" <%= 'selected' if listing.extra_fields&.dig('make') == 'Seat' %>>Seat</option>
+            <option value="Skoda" <%= 'selected' if listing.extra_fields&.dig('make') == 'Skoda' %>>Skoda</option>
+            <option value="Smart" <%= 'selected' if listing.extra_fields&.dig('make') == 'Smart' %>>Smart</option>
+            <option value="Subaru" <%= 'selected' if listing.extra_fields&.dig('make') == 'Subaru' %>>Subaru</option>
+            <option value="Suzuki" <%= 'selected' if listing.extra_fields&.dig('make') == 'Suzuki' %>>Suzuki</option>
+            <option value="Tesla" <%= 'selected' if listing.extra_fields&.dig('make') == 'Tesla' %>>Tesla</option>
+            <option value="Toyota" <%= 'selected' if listing.extra_fields&.dig('make') == 'Toyota' %>>Toyota</option>
+            <option value="Vauxhall" <%= 'selected' if listing.extra_fields&.dig('make') == 'Vauxhall' %>>Vauxhall</option>
+            <option value="Volkswagen" <%= 'selected' if listing.extra_fields&.dig('make') == 'Volkswagen' %>>Volkswagen</option>
+            <option value="Volvo" <%= 'selected' if listing.extra_fields&.dig('make') == 'Volvo' %>>Volvo</option>
+          </select>
         </div>
         
         <div class="form-field">
           <label for="listing_model">Model</label>
-          <input type="text" name="listing[model]" id="listing_model" value="<%= listing.extra_fields&.dig('model') %>" placeholder="e.g., Corolla, Focus, 3 Series" class="form-input">
+          <select name="listing[model]" id="listing_model" class="form-select">
+            <option value="">Select Model</option>
+          </select>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-field">
           <label for="listing_year">Year</label>
-          <input type="number" name="listing[year]" id="listing_year" value="<%= listing.extra_fields&.dig('year') %>" placeholder="e.g., 2020" min="1900" max="<%= Date.current.year + 1 %>" class="form-input">
+          <select name="listing[year]" id="listing_year" class="form-select">
+            <option value="">Select Year</option>
+            <% (1990..Date.current.year + 1).to_a.reverse.each do |year| %>
+              <option value="<%= year %>" <%= 'selected' if listing.extra_fields&.dig('year') == year.to_s %>><%= year %></option>
+            <% end %>
+          </select>
         </div>
         
         <div class="form-field">
@@ -96,10 +168,12 @@
         </div>
       </div>
 
-      <div class="form-field">
-        <label for="listing_license_plate">License Plate</label>
-        <input type="text" name="listing[license_plate]" id="listing_license_plate" value="<%= listing.extra_fields&.dig('license_plate') %>" placeholder="e.g., 181-D-12345" style="text-transform: uppercase;" class="form-input">
-      </div>
+      <!-- Hidden fields for vehicle data from registration lookup -->
+      <input type="hidden" name="listing[vehicle_registration]" id="listing_vehicle_registration" value="<%= listing.extra_fields&.dig('vehicle_registration') %>">
+      <input type="hidden" name="listing[performance]" id="listing_performance" value="<%= listing.extra_fields&.dig('performance')&.to_json %>">
+      <input type="hidden" name="listing[dimensions]" id="listing_dimensions" value="<%= listing.extra_fields&.dig('dimensions')&.to_json %>">
+      <input type="hidden" name="listing[features]" id="listing_features" value="<%= listing.extra_fields&.dig('features')&.to_json %>">
+      <input type="hidden" name="listing[running_costs]" id="listing_running_costs" value="<%= listing.extra_fields&.dig('running_costs')&.to_json %>">
     </div>
 
     <div class="form-section">
@@ -160,8 +234,146 @@
     }
   }
   
-  // Show fields if category is already selected (for edit)
+  // Vehicle registration lookup
   document.addEventListener('DOMContentLoaded', function() {
     showCategoryFields();
+    
+    const lookupBtn = document.getElementById('lookup_registration_btn');
+    const lookupInput = document.getElementById('vehicle_registration_lookup');
+    const statusDiv = document.getElementById('lookup_status');
+    
+    if (lookupBtn && lookupInput) {
+      lookupBtn.addEventListener('click', function() {
+        const registration = lookupInput.value.trim().toUpperCase().replace(/\s+/g, '');
+        
+        if (!registration) {
+          statusDiv.innerHTML = '<p style="color: #EF4444;">Please enter a registration number</p>';
+          statusDiv.style.display = 'block';
+          return;
+        }
+        
+        // Show loading state
+        lookupBtn.disabled = true;
+        lookupBtn.textContent = 'Looking up...';
+        statusDiv.innerHTML = '<p style="color: #4FD1A5;">Looking up vehicle details...</p>';
+        statusDiv.style.display = 'block';
+        
+        // Call lookup API
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+          statusDiv.innerHTML = '<p style="color: #EF4444;">Error: CSRF token not found. Please refresh the page.</p>';
+          statusDiv.style.display = 'block';
+          lookupBtn.disabled = false;
+          lookupBtn.textContent = 'Lookup';
+          return;
+        }
+        
+        fetch('/vehicle_lookup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken.content,
+            'Accept': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({ registration: registration })
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { throw err; });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success && data.data) {
+            // Store registration (private)
+            const regField = document.getElementById('listing_vehicle_registration');
+            if (regField) {
+              regField.value = registration;
+            }
+            
+            // Auto-fill basic fields
+            const makeSelect = document.getElementById('listing_make');
+            if (makeSelect && data.data.make) {
+              makeSelect.value = data.data.make;
+              // Trigger model update
+              const makeEvent = new Event('change');
+              makeSelect.dispatchEvent(makeEvent);
+            }
+            
+            const modelSelect = document.getElementById('listing_model');
+            if (modelSelect && data.data.model) {
+              // Wait a bit for model options to populate
+              setTimeout(() => {
+                modelSelect.value = data.data.model;
+              }, 100);
+            }
+            
+            const yearSelect = document.getElementById('listing_year');
+            if (yearSelect && data.data.year) {
+              yearSelect.value = data.data.year;
+            }
+            
+            const engineSizeInput = document.getElementById('listing_engine_size');
+            if (engineSizeInput && data.data.engine_size) {
+              engineSizeInput.value = data.data.engine_size;
+            }
+            
+            const fuelTypeSelect = document.getElementById('listing_fuel_type');
+            if (fuelTypeSelect && data.data.fuel_type) {
+              fuelTypeSelect.value = data.data.fuel_type;
+            }
+            
+            const transmissionSelect = document.getElementById('listing_transmission');
+            if (transmissionSelect && data.data.transmission) {
+              transmissionSelect.value = data.data.transmission;
+            }
+            
+            // Store detailed data in hidden fields
+            const perfField = document.getElementById('listing_performance');
+            const dimField = document.getElementById('listing_dimensions');
+            const featField = document.getElementById('listing_features');
+            const costField = document.getElementById('listing_running_costs');
+            
+            if (perfField && data.data.performance) {
+              perfField.value = JSON.stringify(data.data.performance);
+            }
+            if (dimField && data.data.dimensions) {
+              dimField.value = JSON.stringify(data.data.dimensions);
+            }
+            if (featField && data.data.features) {
+              featField.value = JSON.stringify(data.data.features);
+            }
+            if (costField && data.data.running_costs) {
+              costField.value = JSON.stringify(data.data.running_costs);
+            }
+            
+            statusDiv.innerHTML = '<p style="color: #22C55E;">✓ Vehicle details loaded successfully!</p>';
+            setTimeout(() => {
+              statusDiv.style.display = 'none';
+            }, 3000);
+          } else {
+            statusDiv.innerHTML = '<p style="color: #EF4444;">' + (data.error || 'Vehicle not found. Please enter details manually.') + '</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          const errorMsg = error.error || error.message || 'Error looking up vehicle. Please enter details manually.';
+          statusDiv.innerHTML = '<p style="color: #EF4444;">' + errorMsg + '</p>';
+        })
+        .finally(() => {
+          lookupBtn.disabled = false;
+          lookupBtn.textContent = 'Lookup';
+        });
+      });
+      
+      // Allow Enter key to trigger lookup
+      lookupInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          lookupBtn.click();
+        }
+      });
+    }
   });
 </script>

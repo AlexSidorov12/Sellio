@@ -51,6 +51,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_10_140000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "favorites", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "listing_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["listing_id"], name: "index_favorites_on_listing_id"
+    t.index ["user_id", "listing_id"], name: "index_favorites_on_user_id_and_listing_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
   create_table "listings", force: :cascade do |t|
     t.bigint "category_id"
     t.string "city"
@@ -110,6 +120,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_10_140000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "favorites", "listings"
+  add_foreign_key "favorites", "users"
   add_foreign_key "messages", "listings"
   add_foreign_key "messages", "users", column: "recipient_id"
   add_foreign_key "messages", "users", column: "sender_id"

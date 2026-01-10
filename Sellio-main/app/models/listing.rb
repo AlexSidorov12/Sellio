@@ -2,6 +2,8 @@ class Listing < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :user, optional: true
   has_many_attached :images
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_by, through: :favorites, source: :user
   
   validates :title, presence: true
   validates :description, presence: true

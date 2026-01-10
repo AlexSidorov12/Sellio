@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: 'registrations' }
-  resources :listings
   resources :tasks
   resources :messages, only: [:index, :show, :new, :create]
   resources :users, only: [:show]
@@ -9,6 +8,15 @@ Rails.application.routes.draw do
   # User account pages
   get "my_listings", to: "listings#my_listings", as: :my_listings
   get "my_messages", to: "messages#my_messages", as: :my_messages
+  get "my_saved_ads", to: "favorites#index", as: :my_saved_ads
+  
+  # Listings with favorites
+  resources :listings do
+    resources :favorites, only: [:create, :destroy]
+  end
+  
+  # Vehicle registration lookup
+  post '/vehicle_lookup', to: 'vehicle_lookup#lookup', as: 'vehicle_lookup'
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
