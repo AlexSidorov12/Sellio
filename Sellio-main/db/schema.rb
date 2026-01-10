@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_09_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_10_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_09_190000) do
     t.datetime "created_at", null: false
     t.text "description"
     t.datetime "expires_at"
+    t.jsonb "extra_fields", default: {}
     t.boolean "featured"
     t.decimal "price"
     t.string "status"
@@ -68,6 +69,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_09_190000) do
     t.bigint "user_id"
     t.integer "views"
     t.index ["category_id"], name: "index_listings_on_category_id"
+    t.index ["extra_fields"], name: "index_listings_on_extra_fields", using: :gin
     t.index ["user_id"], name: "index_listings_on_user_id"
   end
 

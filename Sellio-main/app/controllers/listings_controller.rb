@@ -92,6 +92,23 @@ class ListingsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def listing_params
-      params.expect(listing: [ :title, :description, :price, :city, :category_id, images: [] ])
+      base_params = params.require(:listing).permit(:title, :description, :price, :city, :category_id, 
+                                                     images: [], 
+                                                     :make, :model, :year, :mileage, :engine_size, 
+                                                     :fuel_type, :transmission, :previous_owners, :license_plate)
+      
+      # Build extra_fields hash for category-specific data
+      extra_fields = {}
+      motors_fields = [:make, :model, :year, :mileage, :engine_size, :fuel_type, :transmission, :previous_owners, :license_plate]
+      
+      motors_fields.each do |field|
+        if base_params[field].present?
+          extra_fields[field.to_s] = base_params[field]
+          base_params = base_params.except(field)
+        end
+      end
+      
+      base_params[:extra_fields] = extra_fields if extra_fields.any?
+      base_params
     end
 end

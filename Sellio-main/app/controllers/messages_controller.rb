@@ -30,6 +30,8 @@ class MessagesController < ApplicationController
   def new
     @message = Message.new
     @listing = Listing.find(params[:listing_id]) if params[:listing_id]
+    @message.recipient_id = params[:recipient_id] if params[:recipient_id]
+    @message.listing_id = @listing.id if @listing
   end
 
   # POST /messages

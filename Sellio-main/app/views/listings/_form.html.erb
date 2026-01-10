@@ -22,12 +22,83 @@
       <div class="form-field">
         <%= form.label :category_id, "Category *" %>
         <%= form.collection_select :category_id, Category.all.order(:name), :id, :name, 
-            { prompt: "Select a category" }, { class: "form-select", required: true } %>
+            { prompt: "Select a category", selected: listing.category_id }, 
+            { class: "form-select", required: true, id: "listing_category_id", onchange: "showCategoryFields()" } %>
       </div>
 
       <div class="form-field">
         <%= form.label :description, "Description *" %>
         <%= form.text_area :description, rows: 6, placeholder: "Describe your item in detail..." %>
+      </div>
+    </div>
+
+    <!-- Category-Specific Fields (Motors/Cars) -->
+    <div class="form-section" id="motors-fields" style="display: none;">
+      <h2>Vehicle Details</h2>
+      
+      <div class="form-row">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="listing_make">Make</label>
+          <input type="text" name="listing[make]" id="listing_make" value="<%= listing.extra_fields&.dig('make') %>" placeholder="e.g., Toyota, Ford, BMW" class="form-input">
+        </div>
+        
+        <div class="form-field">
+          <label for="listing_model">Model</label>
+          <input type="text" name="listing[model]" id="listing_model" value="<%= listing.extra_fields&.dig('model') %>" placeholder="e.g., Corolla, Focus, 3 Series" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="listing_year">Year</label>
+          <input type="number" name="listing[year]" id="listing_year" value="<%= listing.extra_fields&.dig('year') %>" placeholder="e.g., 2020" min="1900" max="<%= Date.current.year + 1 %>" class="form-input">
+        </div>
+        
+        <div class="form-field">
+          <label for="listing_mileage">Mileage (km)</label>
+          <input type="number" name="listing[mileage]" id="listing_mileage" value="<%= listing.extra_fields&.dig('mileage') %>" placeholder="e.g., 50000" min="0" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="listing_engine_size">Engine Size</label>
+          <input type="text" name="listing[engine_size]" id="listing_engine_size" value="<%= listing.extra_fields&.dig('engine_size') %>" placeholder="e.g., 1.6L, 2.0L" class="form-input">
+        </div>
+        
+        <div class="form-field">
+          <label for="listing_fuel_type">Fuel Type</label>
+          <select name="listing[fuel_type]" id="listing_fuel_type" class="form-select">
+            <option value="">Select fuel type</option>
+            <option value="Petrol" <%= 'selected' if listing.extra_fields&.dig('fuel_type') == 'Petrol' %>>Petrol</option>
+            <option value="Diesel" <%= 'selected' if listing.extra_fields&.dig('fuel_type') == 'Diesel' %>>Diesel</option>
+            <option value="Electric" <%= 'selected' if listing.extra_fields&.dig('fuel_type') == 'Electric' %>>Electric</option>
+            <option value="Hybrid" <%= 'selected' if listing.extra_fields&.dig('fuel_type') == 'Hybrid' %>>Hybrid</option>
+            <option value="Other" <%= 'selected' if listing.extra_fields&.dig('fuel_type') == 'Other' %>>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="listing_transmission">Transmission</label>
+          <select name="listing[transmission]" id="listing_transmission" class="form-select">
+            <option value="">Select transmission</option>
+            <option value="Manual" <%= 'selected' if listing.extra_fields&.dig('transmission') == 'Manual' %>>Manual</option>
+            <option value="Automatic" <%= 'selected' if listing.extra_fields&.dig('transmission') == 'Automatic' %>>Automatic</option>
+          </select>
+        </div>
+        
+        <div class="form-field">
+          <label for="listing_previous_owners">Previous Owners</label>
+          <input type="number" name="listing[previous_owners]" id="listing_previous_owners" value="<%= listing.extra_fields&.dig('previous_owners') %>" placeholder="e.g., 2" min="0" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="listing_license_plate">License Plate</label>
+        <input type="text" name="listing[license_plate]" id="listing_license_plate" value="<%= listing.extra_fields&.dig('license_plate') %>" placeholder="e.g., 181-D-12345" style="text-transform: uppercase;" class="form-input">
       </div>
     </div>
 
@@ -75,3 +146,22 @@
     </div>
   </div>
 <% end %>
+
+<script>
+  function showCategoryFields() {
+    const categorySelect = document.getElementById('listing_category_id');
+    const motorsFields = document.getElementById('motors-fields');
+    const selectedCategory = categorySelect.options[categorySelect.selectedIndex].text;
+    
+    if (selectedCategory === 'Motors') {
+      motorsFields.style.display = 'block';
+    } else {
+      motorsFields.style.display = 'none';
+    }
+  }
+  
+  // Show fields if category is already selected (for edit)
+  document.addEventListener('DOMContentLoaded', function() {
+    showCategoryFields();
+  });
+</script>
