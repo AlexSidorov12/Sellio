@@ -11,6 +11,13 @@
       <h1 class="hero-title">Buy & Sell Anything</h1>
       <p class="hero-subtitle">Free classified ads in your area</p>
       
+      <% unless user_signed_in? %>
+        <div class="auth-buttons-hero">
+          <%= link_to "Login", new_user_session_path, class: "btn-hero btn-login" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "btn-hero btn-signup-hero" %>
+        </div>
+      <% end %>
+      
       <div class="search-box">
         <%= form_with url: listings_path, method: :get, local: true, class: "search-form" do |f| %>
           <div class="search-input-group">
